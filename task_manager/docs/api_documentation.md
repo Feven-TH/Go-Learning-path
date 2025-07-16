@@ -16,3 +16,5 @@ POST	    /tasks	        Create a new task
 PUT	        /tasks/:id	    Update a task by ID
 DELETE	    /tasks/:id	    Delete a task by ID
 
+<!-- Important Notes -->
+In the service layer ,pointers are used when we need to access or modify the original task in memory, such as in GetTaskById and UpdateTask, where we return or update a specific task. This allows efficient reference without copying the entire struct. In contrast, functions like GetAllTasks, AddTask, and DeleteTask don’t use pointers because they either return simple copies, add new tasks, or remove tasks—none of which require direct memory access to the original object. Using pointers only where necessary keeps the code clean and efficient.

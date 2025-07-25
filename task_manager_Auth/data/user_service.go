@@ -108,4 +108,3 @@ func GetAllUsers(ctx context.Context, userCollection *mongo.Collection) ([]model
 	}
 	return users, nil
 }
-

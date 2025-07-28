@@ -19,7 +19,7 @@ func NewUserRepo(collection *mongo.Collection) domain.UsersRepo {
 	return &userRepo{collection: collection}
 }
 
-func (r *userRepo) FindUserName(ctx context.Context, userName string) (*model.User, error){
+func (r *userRepo) IFindUserName(ctx context.Context, userName string) (*model.User, error){
 	var existing model.User
 	err := r.collection.FindOne(ctx, bson.M{"username": userName}).Decode(&existing)
 	if err != nil{
@@ -28,7 +28,7 @@ func (r *userRepo) FindUserName(ctx context.Context, userName string) (*model.Us
 	return &existing, nil
 }
 
-func (r *userRepo) CountUsers(ctx context.Context)(int64, error){
+func (r *userRepo) ICountUsers(ctx context.Context)(int64, error){
 	counts, err := r.collection.CountDocuments(ctx, bson.D{})
 	if err!=nil{
 		return 0,err
@@ -36,22 +36,33 @@ func (r *userRepo) CountUsers(ctx context.Context)(int64, error){
 	return counts, nil
 }
 
-func (r *userRepo) CreateUser(ctx context.Context, user model.User) (error){
+func (r *userRepo) ICreateUser(ctx context.Context, user model.User) (error){
+	if user.ID.IsZero() {
+		user.ID = primitive.NewObjectID()
+	}
 	_, err := r.collection.InsertOne(ctx, user)
 	return err
 }
 
-func (r *userRepo) FindByID(ctx context.Context, id primitive.ObjectID) (*model.User, error) {
+func (r *userRepo) IFindByID(ctx context.Context, id string) (*model.User, error) {
+	ObjId, err := primitive.ObjectIDFromHex(id)
+	if err != nil{
+		return nil,err
+	}
 	var user model.User
-	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
+	err = r.collection.FindOne(ctx, bson.M{"_id": ObjId}).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
-func (r *userRepo) UpdateUserRole(ctx context.Context, userID primitive.ObjectID, newRole string) error{
-	filter := bson.M{"_id": userID}
+func (r *userRepo) IUpdateUserRole(ctx context.Context, userID string, newRole string) error{
+	ObjId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil{
+		return err
+	}
+	filter := bson.M{"_id": ObjId}
 	update := bson.M{
 		"$set": bson.M{
 			"role" : newRole,
@@ -67,7 +78,7 @@ func (r *userRepo) UpdateUserRole(ctx context.Context, userID primitive.ObjectID
 	return nil
 }
 
-func (r *userRepo) GetAllUsers(ctx context.Context) ([]model.User, error){
+func (r *userRepo) IGetAllUsers(ctx context.Context) ([]model.User, error){
 	var users []model.User
 	cursor, err := r.collection.Find(ctx, bson.D{})
 	if err!= nil{

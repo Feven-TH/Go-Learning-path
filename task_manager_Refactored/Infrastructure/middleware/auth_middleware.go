@@ -25,7 +25,7 @@ func AuthMiddleware(tokenService services.TokenService) gin.HandlerFunc {
 
 		tokenString := splitToken[1]
 
-		claims, err := tokenService.VerifyToken(tokenString)
+		claims, err := tokenService.IVerifyToken(tokenString)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()

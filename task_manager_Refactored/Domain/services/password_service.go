@@ -1,6 +1,6 @@
 package services
 
 type PasswordService interface {
-    HashPassword(password string) (string, error)
-    ComparePassword(hashed, plain string) error
+    IHashPassword(password string) (string, error)
+    IComparePassword(hashed, plain string) error
 }

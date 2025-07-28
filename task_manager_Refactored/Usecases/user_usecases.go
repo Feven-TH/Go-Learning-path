@@ -10,8 +10,6 @@ import (
 	"task_manager_Refactored/Domain/response"
 	"task_manager_Refactored/Domain/services"
 	"task_manager_Refactored/Domain/usecase_interfaces"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type userUsecase struct {
@@ -29,13 +27,9 @@ func NewUserUseCase(repo domain.UsersRepo, password services.PasswordService, to
 }
 
 
-func (uc *userUsecase) PromoteUser(ctx context.Context, adminID, targetUserID string) error {
-	adminObjId,err := primitive.ObjectIDFromHex(adminID)
-	if err != nil{
-		return err
-	}
+func (uc *userUsecase) IPromoteUser(ctx context.Context, adminID, targetUserID string) error {
 
-	admin, err := uc.repo.FindByID(ctx, adminObjId)
+	admin, err := uc.repo.IFindByID(ctx, adminID)
 	if err != nil{
 		return err
 	}
@@ -43,56 +37,47 @@ func (uc *userUsecase) PromoteUser(ctx context.Context, adminID, targetUserID st
 		return errors.New("ony admins can promote")
 	} 
 
-	userObjId,err := primitive.ObjectIDFromHex(targetUserID)
-	if err != nil{
-		return err
-	}
-
-	err = uc.repo.UpdateUserRole(ctx,userObjId, "Admin" )
+	err = uc.repo.IUpdateUserRole(ctx,targetUserID, "Admin" )
 	return err
 }
 
-func(uc *userUsecase) RegisterUser(ctx context.Context, creds request.Credentials) error{
-	_, err := uc.repo.FindUserName(ctx, creds.Username)
+func(uc *userUsecase) IRegisterUser(ctx context.Context, creds request.Credentials) error{
+	_, err := uc.repo.IFindUserName(ctx, creds.Username)
 	if err == nil {
 		return errors.New("username already exists")
 	}
 
-	hashed , err := uc.password.HashPassword(creds.Password)
+	hashed , err := uc.password.IHashPassword(creds.Password)
 	if err != nil{
 		return err
 	}
 	newUser := model.User{
-		ID:       primitive.NewObjectID(),
 		Username: creds.Username,
 		Password: string(hashed),
 		Role:     "user",
 	}
-	counts,err := uc.repo.CountUsers(ctx)
+	counts,err := uc.repo.ICountUsers(ctx)
 	if err != nil{
 		return err
 	}
 	if counts == 0{
-		err := uc.repo.UpdateUserRole(ctx, newUser.ID, "Admin")
-		if err != nil{
-			return err
-		}
+		newUser.Role = "Admin"
 	}
-	err = uc.repo.CreateUser(ctx, newUser)
+	err = uc.repo.ICreateUser(ctx, newUser)
 	return err 
 	
 }
 
-func(uc *userUsecase) LoginUser(ctx context.Context, creds request.Credentials) (*response.TokenResponse, error) {
-	user,err := uc.repo.FindUserName(ctx, creds.Username)
+func(uc *userUsecase) ILoginUser(ctx context.Context, creds request.Credentials) (*response.TokenResponse, error) {
+	user,err := uc.repo.IFindUserName(ctx, creds.Username)
 	if err != nil{
 		return nil,err
 	}
-	err = uc.password.ComparePassword(user.Password, creds.Password)
+	err = uc.password.IComparePassword(user.Password, creds.Password)
 	if err != nil{
 		return nil,err
 	}
-	myToken,err := uc.token.GenerateAccessToken(user.ID.Hex(), user.Role)
+	myToken,err := uc.token.IGenerateAccessToken(user.ID.Hex(), user.Role)
 	if err != nil{
 		return nil,err
 	}
@@ -100,8 +85,8 @@ func(uc *userUsecase) LoginUser(ctx context.Context, creds request.Credentials) 
 
 }
 
-func(uc *userUsecase) GetAllUsers(ctx context.Context) ([]model.User, error){
-	users,err := uc.repo.GetAllUsers(ctx)
+func(uc *userUsecase) IGetAllUsers(ctx context.Context) ([]model.User, error){
+	users,err := uc.repo.IGetAllUsers(ctx)
 	if err != nil{
 		return nil,err
 	}

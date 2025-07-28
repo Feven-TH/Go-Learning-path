@@ -2,10 +2,8 @@ package infrastructure
 
 import (
 	"errors"
-	// "os"
 	"task_manager_Refactored/Domain/response"
 	"time"
-
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -18,7 +16,7 @@ func NewJwtTokenService(secret string) *JwtTokenService {
 }
 
 
-func (j *JwtTokenService) GenerateAccessToken(userID, role string) (*response.TokenResponse, error) {
+func (j *JwtTokenService) IGenerateAccessToken(userID, role string) (*response.TokenResponse, error) {
     claims := jwt.MapClaims{
         "sub":  userID,
         "role": role,
@@ -34,7 +32,7 @@ func (j *JwtTokenService) GenerateAccessToken(userID, role string) (*response.To
     }, nil
 }
 
-func (j *JwtTokenService) VerifyToken(tokenString string) (jwt.MapClaims, error) {
+func (j *JwtTokenService) IVerifyToken(tokenString string) (jwt.MapClaims, error) {
     token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
         if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
             return nil, errors.New("unexpected signing method")

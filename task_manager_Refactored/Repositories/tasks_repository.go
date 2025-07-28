@@ -21,7 +21,7 @@ func NewTaskRepo(collection *mongo.Collection) domain.TaskRepo{
 	return &taskRepo{collection: collection}
 }
 
-func (r *taskRepo) GetAllTasks(ctx context.Context) ([]model.Task, error) {
+func (r *taskRepo) IGetAllTasks(ctx context.Context) ([]model.Task, error) {
 	var tasks[]model.Task
 
 	cursor,err := r.collection.Find(ctx , bson.D{})
@@ -37,7 +37,7 @@ func (r *taskRepo) GetAllTasks(ctx context.Context) ([]model.Task, error) {
 	return tasks,nil
 }
 
-func (r *taskRepo) GetTaskById(ctx context.Context, id string) (*model.Task , error){
+func (r *taskRepo) IGetTaskById(ctx context.Context, id string) (*model.Task , error){
 	Id, err := primitive.ObjectIDFromHex(id)
 
 	if err!= nil{
@@ -51,7 +51,7 @@ func (r *taskRepo) GetTaskById(ctx context.Context, id string) (*model.Task , er
 	return &task, nil
 }
 
-func (r *taskRepo) UpdateTask(ctx context.Context, id string,updated model.Task) (*model.Task, error){
+func (r *taskRepo) IUpdateTask(ctx context.Context, id string,updated model.Task) (*model.Task, error){
 	Id, err := primitive.ObjectIDFromHex(id)
 	if err!=nil{
 		return nil, err
@@ -75,7 +75,7 @@ func (r *taskRepo) UpdateTask(ctx context.Context, id string,updated model.Task)
 	return &updatedTask, nil
 }	
 
-func (r *taskRepo) AddTask(ctx context.Context, newTask model.Task) (*model.Task, error) {
+func (r *taskRepo) IAddTask(ctx context.Context, newTask model.Task) (*model.Task, error) {
 	res, err := r.collection.InsertOne(ctx, newTask)
 	if err != nil {
 		return nil, err 
@@ -91,7 +91,7 @@ func (r *taskRepo) AddTask(ctx context.Context, newTask model.Task) (*model.Task
 	return &newTask, nil
 }
 
-func (r *taskRepo) DeleteTask(ctx context.Context, id string) (error){
+func (r *taskRepo) IDeleteTask(ctx context.Context, id string) (error){
 	Id,err := primitive.ObjectIDFromHex(id)
 	if err !=nil{
 		return err

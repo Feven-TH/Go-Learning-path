@@ -24,7 +24,7 @@ func (uc *UserController) SignUp(c *gin.Context){
 	}	
     ctx := c.Request.Context()
 
-    err := uc.usecase.RegisterUser(ctx, req)
+    err := uc.usecase.IRegisterUser(ctx, req)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"msg": "registration failed"})
         return
@@ -41,7 +41,7 @@ func (uc *UserController) Login(c *gin.Context){
 
 	ctx := c.Request.Context()
 
-	accessToken, err := uc.usecase.LoginUser(ctx,user)
+	accessToken, err := uc.usecase.ILoginUser(ctx,user)
 	if err != nil{
 		c.JSON(http.StatusUnauthorized, gin.H{"msg": "invalid credentails"})
 		return 
@@ -61,7 +61,7 @@ func (uc *UserController) PromoteUser(c *gin.Context){
 	
 	adminID := c.GetString("userID")  // middleware sets this from JWT
 
-	err := uc.usecase.PromoteUser(ctx, adminID, user.TargetUserID)
+	err := uc.usecase.IPromoteUser(ctx, adminID, user.TargetUserID)
 	if err != nil{
 		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
@@ -73,7 +73,7 @@ func (uc *UserController) PromoteUser(c *gin.Context){
 func (uc *UserController) GetAllUsers(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	users, err := uc.usecase.GetAllUsers(ctx)
+	users, err := uc.usecase.IGetAllUsers(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not retrieve users"})
 		return

@@ -6,6 +6,6 @@ import (
 )
 
 type TokenService interface {
-	GenerateAccessToken(userID , role string) (*response.TokenResponse, error)
-	VerifyToken(tokenString string) (jwt.MapClaims, error)
+	IGenerateAccessToken(userID , role string) (*response.TokenResponse, error)
+	IVerifyToken(tokenString string) (jwt.MapClaims, error)
 }

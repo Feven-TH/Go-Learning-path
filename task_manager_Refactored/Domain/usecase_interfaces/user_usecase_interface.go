@@ -8,8 +8,8 @@ import (
 )
 
 type UserUsecase interface {
-	RegisterUser(ctx context.Context, creds request.Credentials) error
-	LoginUser(ctx context.Context, creds request.Credentials) (*response.TokenResponse, error)
-	GetAllUsers(ctx context.Context) ([]model.User, error)
-	PromoteUser(ctx context.Context, adminID, targetUserID string) error
+	IRegisterUser(ctx context.Context, creds request.Credentials) error
+	ILoginUser(ctx context.Context, creds request.Credentials) (*response.TokenResponse, error)
+	IGetAllUsers(ctx context.Context) ([]model.User, error)
+	IPromoteUser(ctx context.Context, adminID, targetUserID string) error
 }

@@ -15,9 +15,6 @@ To ensure correctness and stability of the Task Manager API by writing **unit te
 | Infrastructure/middleware             | ✅ 100.0%       |
 
 
-Run command:
-```bash
-go test ./... -cover
 
 ## Testing Strategy
 

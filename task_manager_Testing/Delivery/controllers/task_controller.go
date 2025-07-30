@@ -2,9 +2,8 @@ package controllers
 
 import (
 	"net/http"
-	model "task_manager_Refactored/Domain/entities"
-	usecase_interface "task_manager_Refactored/Domain/usecase_interfaces"
-
+	model "task_manager_Testing/Domain/entities"
+	usecase_interface "task_manager_Testing/Domain/usecase_interfaces"
 	"github.com/gin-gonic/gin"
 )
 
@@ -43,10 +42,12 @@ func (tc *TaskController) UpdateTask(c *gin.Context){
 	var updatedTask model.Task
 	if err := c.BindJSON(&updatedTask) ; err != nil{
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid Input"})
+		return
 	}
 	updated,err := tc.uc.IUpdateTask(ctx, Id, updatedTask)
 	if err!=nil{
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	c.IndentedJSON(http.StatusOK, updated)
 }

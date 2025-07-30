@@ -13,6 +13,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: List repo root contents
+        run: ls -la
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
@@ -20,14 +23,14 @@ jobs:
 
       - name: Install Dependencies
         run: go mod tidy
-        working-directory: tasks/task_manager_Testing
+        working-directory: task_manager_Testing
 
       - name: Run Unit Tests
         run: go test ./... -v -coverprofile=coverage.out
-        working-directory: tasks/task_manager_Testing
+        working-directory: task_manager_Testing
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: tasks/task_manager_Testing/coverage.out
+          path: task_manager_Testing/coverage.out
